@@ -1,0 +1,36 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv/
+
+# Environment variables
+.env
+.env.local
+
+# Contexto del cliente (material de referencia, guardado en OneDrive)
+contexto/
+
+# Supabase
+.supabase/
+
+# Node
+node_modules/
+
+# IDE
+.vscode/
+.idea/
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temp
+*.stackdump
+nul
