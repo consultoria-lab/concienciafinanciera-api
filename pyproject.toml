@@ -1,7 +1,18 @@
 [project]
 name = "concienciafinanciera-api"
 version = "0.1.0"
-description = "Add your description here"
+description = "API de extraccion con LLM para ConCiencia Financiera"
 readme = "README.md"
-requires-python = ">=3.14"
-dependencies = []
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "python-multipart",
+    "langchain-openai",
+    "openai",
+    "supabase",
+    "pydantic-settings",
+    "pymupdf",
+    "python-dotenv",
+    "openpyxl>=3.1.5",
+]

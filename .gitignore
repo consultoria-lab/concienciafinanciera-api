@@ -15,6 +15,7 @@ wheels/
 
 # Contexto del cliente (material de referencia, guardado en OneDrive)
 contexto/
+backup/
 
 # Supabase
 .supabase/
