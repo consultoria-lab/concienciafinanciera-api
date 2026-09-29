@@ -1,7 +1,8 @@
 import logging
 
-from fastapi import APIRouter, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, HTTPException, UploadFile
 
+from app.dependencies import verify_api_key
 from app.models.schemas import ExtractionResponse
 from app.services.extraction import (
     SUPPORTED_TYPES,
@@ -24,7 +25,7 @@ MAX_FILE_SIZE = 10 * 1024 * 1024  # 10 MB
 
 
 @router.post("/presupuesto", response_model=ExtractionResponse)
-async def extract_presupuesto_endpoint(file: UploadFile):
+async def extract_presupuesto_endpoint(file: UploadFile, _key: str = Depends(verify_api_key)):
     """Extrae conceptos de presupuesto (entradas/salidas) de un archivo."""
     content_type = file.content_type or ""
     logger.info("POST /extract/presupuesto - archivo: %s, tipo: %s", file.filename, content_type)
@@ -77,7 +78,7 @@ async def extract_presupuesto_endpoint(file: UploadFile):
 
 
 @router.post("/inversiones", response_model=ExtractionResponse)
-async def extract_inversiones_endpoint(file: UploadFile):
+async def extract_inversiones_endpoint(file: UploadFile, _key: str = Depends(verify_api_key)):
     """Extrae inversiones de un archivo."""
     content_type = file.content_type or ""
     logger.info("POST /extract/inversiones - archivo: %s, tipo: %s", file.filename, content_type)

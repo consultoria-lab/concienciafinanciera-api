@@ -1,0 +1,16 @@
+.env
+.env.local
+.venv/
+.git/
+.gitignore
+.claude/
+__pycache__/
+tests/
+*.pyc
+backup/
+contexto/
+.vscode/
+.idea/
+Dockerfile
+.dockerignore
+README.md

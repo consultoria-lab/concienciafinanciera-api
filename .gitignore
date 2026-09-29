@@ -19,6 +19,7 @@ backup/
 
 # Supabase
 .supabase/
+supabase/
 
 # Node
 node_modules/

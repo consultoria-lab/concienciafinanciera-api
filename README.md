@@ -1,67 +1,94 @@
-# ConCiencia Financiera - Desarrollo Local
+# ConCiencia Financiera API
 
-## Levantar ambos servicios
+REST API that extracts structured financial data (expenses, income, investments) from documents using LLMs. It processes PDFs, images, audio, text files, and Excel spreadsheets, then returns normalized items ready to be stored in a database.
 
-### 1. API (FastAPI) - Terminal 1
+Built as the backend for a personal finance PWA aimed at young adults in Colombia. The frontend is a React app built with [Lovable](https://lovable.dev); this API serves as the bridge between it and a Supabase/PostgreSQL database for tasks that require LLM processing.
+
+## Stack
+
+- **Python 3.12+** with [uv](https://docs.astral.sh/uv/) for dependency management
+- **FastAPI** — async REST framework
+- **LangChain + OpenAI** — LLM-powered extraction (GPT-4o-mini) and audio transcription (Whisper)
+- **Supabase** — PostgreSQL database with row-level security
+- **Pydantic** — request/response validation and structured output
+- **PyMuPDF** — PDF to image conversion for vision-based extraction
+- **Docker** — containerized deployment
+
+## Endpoints
+
+| Method | Path | Description |
+|:---|:---|:---|
+| `GET` | `/health` | Health check (no auth) |
+| `POST` | `/extract/presupuesto` | Extract budget items (income/expenses) from a file |
+| `POST` | `/extract/inversiones` | Extract investment items from a file |
+
+Both extraction endpoints require an `X-API-Key` header and accept a file upload (`multipart/form-data`). Supported file types: PDF, images (PNG/JPEG/WebP/GIF), audio (MP3/WAV/OGG/M4A/WebM/FLAC), text, and Excel.
+
+## Setup
 
 ```bash
+# Clone and install
+git clone <repo-url>
 cd concienciafinanciera-api
+uv sync
+
+# Configure environment
+cp .env.example .env
+# Fill in your API keys in .env
+
+# Run
 uv run main.py
 ```
 
-- API: http://localhost:8000
-- Swagger: http://localhost:8000/docs
-- Health: http://localhost:8000/health
+The API will be available at `http://localhost:8000` with interactive docs at `/docs`.
 
-### 2. Frontend (Lovable) - Terminal 2
+## Environment Variables
 
-```bash
-cd conciencia-financiera-hub
-npm install
-npm run dev
-```
+See [`.env.example`](.env.example) for the full list. Required:
 
-- App: http://localhost:5173
+| Variable | Description |
+|:---|:---|
+| `OPENAI_API_KEY` | OpenAI API key for GPT and Whisper |
+| `SUPABASE_URL` | Supabase project URL |
+| `SUPABASE_SECRET_KEY` | Supabase service role key |
+| `API_KEY` | API key for authenticating requests |
 
-## Probar la API
-
-### Swagger UI (navegador)
-
-1. Abrir http://localhost:8000/docs
-2. Click en POST /extract/presupuesto (o /inversiones)
-3. Click en "Try it out"
-4. En campo file, click "Choose File" y seleccionar PDF/imagen/audio/txt
-5. Click "Execute"
-
-### curl
+## Tests
 
 ```bash
-# Texto plano
-curl -X POST http://localhost:8000/extract/presupuesto \
-  -F "file=@archivo.txt;type=text/plain"
-
-# PDF
-curl -X POST http://localhost:8000/extract/presupuesto \
-  -F "file=@presupuesto.pdf"
-
-# Imagen
-curl -X POST http://localhost:8000/extract/inversiones \
-  -F "file=@foto.jpg"
-
-# Audio
-curl -X POST http://localhost:8000/extract/inversiones \
-  -F "file=@nota.m4a"
+uv sync --extra dev
+uv run pytest -v
 ```
 
-## Variables de entorno (.env)
+## Docker
+
+```bash
+docker build -t concienciafinanciera-api .
+docker run -p 8000:8000 --env-file .env concienciafinanciera-api
+```
+
+## Project Structure
 
 ```
-OPENAI_API_KEY=sk-...
-SUPABASE_URL=https://xxx.supabase.co
-SUPABASE_SECRET_KEY=sb_secret_...
-OPENAI_MODEL=gpt-4o-mini
-WHISPER_MODEL=whisper-1
-LANGSMITH_TRACING=true
-LANGSMITH_API_KEY=lsv2_pt_...
-LANGSMITH_PROJECT=conciencia financiera api
+├── main.py                  # App entrypoint
+├── app/
+│   ├── config.py            # Settings (env vars)
+│   ├── dependencies.py      # Auth dependency
+│   ├── models/
+│   │   └── schemas.py       # Pydantic models
+│   ├── routers/
+│   │   └── extraction.py    # API endpoints
+│   ├── services/
+│   │   ├── extraction.py    # LLM extraction logic
+│   │   ├── preprocessors.py # File processing (PDF, images, audio, Excel)
+│   │   └── supabase_client.py # Database queries
+│   └── prompts/
+│       └── system_prompts.py # LLM prompt templates
+├── tests/                   # Test suite
+├── Dockerfile
+└── pyproject.toml
 ```
+
+---
+
+> This is an adapted version for portfolio purposes. The original project is a shared venture where I serve as the developer and analytics lead.
